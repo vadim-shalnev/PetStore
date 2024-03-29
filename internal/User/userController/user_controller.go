@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/go-chi/chi/v5"
+	"github.com/vadim-shalnev/PetStore/internal/responder"
 	"github.com/vadim-shalnev/PetStore/models"
 	"io/ioutil"
 	"net/http"

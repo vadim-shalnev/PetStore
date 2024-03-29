@@ -34,7 +34,7 @@ func InitRouters(userController *userController.UserController, storeController 
 		r.Get("/order/inventory", controller.Getinventory)
 	})
 	// Pets
-	controller = petsController
+	controller = petController
 	r.Route("/api/", func(r chi.Router) {
 		r.Use(middleware.RefreshToken)
 		//r.Post("/pet/{petId}/uploadImage",controller.UpImage)

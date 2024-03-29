@@ -3,6 +3,7 @@ package storeController
 import (
 	"encoding/json"
 	"github.com/go-chi/chi/v5"
+	"github.com/vadim-shalnev/PetStore/internal/responder"
 	"github.com/vadim-shalnev/PetStore/models"
 	"io/ioutil"
 	"net/http"
@@ -22,7 +23,7 @@ func (c *Storecontroller) NewOrder(w http.ResponseWriter, r *http.Request) {
 		responder.HandleError(w, err)
 		return
 	}
-	err := json.Unmarshal(jsonBody, &order)
+	err = json.Unmarshal(jsonBody, &order)
 	if err != nil {
 		responder.HandleError(w, err)
 		return

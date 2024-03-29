@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"errors"
+	"github.com/go-chi/jwtauth/v5"
 	"time"
 )
 
