@@ -41,6 +41,12 @@ func ConnectionDB(conf config.AppConf) *sql.DB {
 	return db
 }
 
-func ProjectInit(db *sql.DB) {
+type Controllers struct {
+	User
+	Store
+	Pet
+}
+
+func ProjectInit(db *sql.DB) Controllers {
 
 }

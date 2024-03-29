@@ -8,8 +8,6 @@ import (
 	"net/http"
 )
 
-// маршрутизатор принимает структуры слоев
-
 func InitRouters(userController *userController.UserController, storeController *storeController.StoreController, petController *etController.PetController) http.Handler {
 	r := chi.NewRouter()
 	// User
