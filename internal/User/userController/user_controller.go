@@ -4,49 +4,36 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/go-chi/chi/v5"
+	"github.com/vadim-shalnev/PetStore/internal/User/userService"
 	"github.com/vadim-shalnev/PetStore/internal/responder"
 	"github.com/vadim-shalnev/PetStore/models"
-	"io/ioutil"
 	"net/http"
 	"strings"
 )
 
-func NewUserController(service *userService) *Usercontroller {
+func NewUserController(service userService.UserService) *Usercontroller {
 	return &Usercontroller{service: service}
 }
 
 func (c *Usercontroller) CreateUser(w http.ResponseWriter, r *http.Request) {
-	var User models.User
-	jsonBody, err := ioutil.ReadAll(r.Body)
+	var user models.User
+	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		responder.HandleError(w, err)
 		return
 	}
-	err = json.Unmarshal(jsonBody, &User)
+	token, err := c.service.CreateUser(user)
 	if err != nil {
 		responder.HandleError(w, err)
 		return
 	}
-	err = c.service.CreateUser(User)
-	if err != nil {
-		responder.HandleError(w, err)
-		return
-	}
+	w.Header().Set("Authorization", "Bearer "+token)
 	responder.HandleSuccess(w, nil)
 }
 
 func (c *Usercontroller) CreateUsers(w http.ResponseWriter, r *http.Request) {
 	var Users []models.User
-	jsonBody, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		responder.HandleError(w, err)
-		return
-	}
-	err = json.Unmarshal(jsonBody, &Users)
-	if err != nil {
-		responder.HandleError(w, err)
-		return
-	}
+	err := json.NewDecoder(r.Body).Decode(&Users)
 	resp, err := c.service.CreateUsers(Users)
 	if err != nil {
 		responder.HandleError(w, err)
@@ -80,6 +67,7 @@ func (c *Usercontroller) Logout(w http.ResponseWriter, r *http.Request) {
 		responder.HandleError(w, err)
 		return
 	}
+	w.Header().Set("Authorization", "Bearer "+resp)
 	responder.HandleSuccess(w, resp)
 }
 
@@ -98,17 +86,8 @@ func (c *Usercontroller) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	userName := chi.URLParam(r, "username")
 
 	var User models.User
-	jsonBody, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		responder.HandleError(w, err)
-		return
-	}
-	err = json.Unmarshal(jsonBody, &User)
-	if err != nil {
-		responder.HandleError(w, err)
-		return
-	}
-	resp, err := c.service.UpdateUser(userName, User)
+	User.Username = userName
+	resp, err := c.service.UpdateUser(User, User.Username)
 	if err != nil {
 		responder.HandleError(w, err)
 		return
@@ -118,10 +97,10 @@ func (c *Usercontroller) UpdateUser(w http.ResponseWriter, r *http.Request) {
 
 func (c *Usercontroller) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	userName := chi.URLParam(r, "username")
-	resp, err := c.service.DeleteUser(userName)
+	err := c.service.DeleteUser(userName)
 	if err != nil {
 		responder.HandleError(w, err)
 		return
 	}
-	responder.HandleSuccess(w, resp)
+	responder.HandleSuccess(w, nil)
 }

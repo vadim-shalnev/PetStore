@@ -1,7 +1,7 @@
 package models
 
 type Pet struct {
-	ID       int64    `json:"id"`
+	ID       int      `json:"id"`
 	Category Category `json:"category"`
 	Name     string   `json:"name"`
 	//PhotoUrls []string   `json:"photoUrls"`

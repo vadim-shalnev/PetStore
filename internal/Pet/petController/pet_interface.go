@@ -1,9 +1,12 @@
 package petController
 
-import "net/http"
+import (
+	"github.com/vadim-shalnev/PetStore/internal/Pet/petService"
+	"net/http"
+)
 
 type Petcontroller struct {
-	service PetService
+	service petService.PetService
 }
 
 type PetController interface {

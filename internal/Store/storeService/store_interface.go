@@ -3,7 +3,7 @@ package storeService
 import "github.com/vadim-shalnev/PetStore/models"
 
 type Storeservice struct {
-	repo StoreRepository
+	repo storeRepository.StoreRepository
 }
 
 type StoreService interface {

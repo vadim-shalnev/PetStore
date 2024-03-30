@@ -2,7 +2,7 @@ package storeService
 
 import "github.com/vadim-shalnev/PetStore/models"
 
-func NewStoreservice(repo *StoreRepository) *Storeservice {
+func NewStoreService(repo storeRepository.StoreRepository) *Storeservice {
 	return &Storeservice{
 		repo: repo,
 	}

@@ -2,25 +2,23 @@ package petController
 
 import (
 	"encoding/json"
+	"errors"
 	"github.com/go-chi/chi/v5"
+	"github.com/vadim-shalnev/PetStore/internal/Pet/petService"
 	"github.com/vadim-shalnev/PetStore/internal/responder"
 	"github.com/vadim-shalnev/PetStore/models"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 )
 
-func NewPetController(service *PetService) *Petcontroller {
+func NewPetController(service petService.PetService) *Petcontroller {
 	return &Petcontroller{service: service}
 }
 
 func (c *Petcontroller) AddPet(w http.ResponseWriter, r *http.Request) {
 	var pet models.Pet
-	jsonBody, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		responder.HandleError(w, err)
-		return
-	}
-	err = json.Unmarshal(jsonBody, &pet)
+	err := json.NewDecoder(r.Body).Decode(&pet)
 	if err != nil {
 		responder.HandleError(w, err)
 		return
@@ -54,8 +52,13 @@ func (c *Petcontroller) UpdatePet(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Petcontroller) FindByStatus(w http.ResponseWriter, r *http.Request) {
-	status := r.FormValue("status")
-	pets, err := c.service.FindByStatus(status)
+	statuses := r.URL.Query()["status"]
+	if len(statuses) == 0 {
+		responder.HandleError(w, errors.New("No status provided"))
+		return
+	}
+
+	pets, err := c.service.FindByStatus(statuses...)
 	if err != nil {
 		responder.HandleError(w, err)
 		return
@@ -65,8 +68,12 @@ func (c *Petcontroller) FindByStatus(w http.ResponseWriter, r *http.Request) {
 
 func (c *Petcontroller) GetPet(w http.ResponseWriter, r *http.Request) {
 	petId := chi.URLParam(r, "petId")
-
-	pet, err := c.service.GetPet(petId)
+	ID, err := strconv.Atoi(petId)
+	if err != nil {
+		responder.HandleError(w, err)
+		return
+	}
+	pet, err := c.service.GetPet(ID)
 	if err != nil {
 		responder.HandleError(w, err)
 		return
@@ -76,18 +83,14 @@ func (c *Petcontroller) GetPet(w http.ResponseWriter, r *http.Request) {
 
 func (c *Petcontroller) ChangePet(w http.ResponseWriter, r *http.Request) {
 	petId := chi.URLParam(r, "petId")
-	bodyBytes, err := ioutil.ReadAll(r.Body)
+	ID, err := strconv.Atoi(petId)
 	if err != nil {
 		responder.HandleError(w, err)
 		return
 	}
-	var pet []string
-	err = json.Unmarshal(bodyBytes, &pet)
-	if err != nil {
-		responder.HandleError(w, err)
-		return
-	}
-	err = c.service.ChangePet(petId, pet)
+	name := r.FormValue("name")
+	status := r.FormValue("status")
+	err = c.service.ChangePet(ID, name, status)
 	if err != nil {
 		responder.HandleError(w, err)
 		return
@@ -97,7 +100,12 @@ func (c *Petcontroller) ChangePet(w http.ResponseWriter, r *http.Request) {
 
 func (c *Petcontroller) DeletePet(w http.ResponseWriter, r *http.Request) {
 	petId := chi.URLParam(r, "petId")
-	err := c.service.DeletePet(petId)
+	ID, err := strconv.Atoi(petId)
+	if err != nil {
+		responder.HandleError(w, err)
+		return
+	}
+	err = c.service.DeletePet(ID)
 	if err != nil {
 		responder.HandleError(w, err)
 		return

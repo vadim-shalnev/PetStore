@@ -8,25 +8,25 @@ import (
 	"github.com/vadim-shalnev/PetStore/models"
 )
 
-func NewUserService(repo *UserRepos) *Userervice {
-	return &Userervice{}
+func NewUserService(repo userService.UserRepos) *Userservice {
+	return &Userservice{repo: repo}
 }
 
 func (u *Userservice) CreateUser(user models.User) (string, error) {
 	//хэшируем пароль
 	err := criptografy.HashPassword(&user)
 	if err != nil {
-		return "internalError", err
+		return "", err
 	}
 	// добавляем в бд
 	err = u.repo.CreateUser(&user)
 	if err != nil {
-		return "internalError", err
+		return "", err
 	}
 	// генерируем токен
 	token, err := middleware.NewTokenMiddleware(&user)
 	if err != nil {
-		return "internalError", err
+		return "", err
 	}
 	return token, nil
 }
@@ -53,7 +53,7 @@ func (u *Userservice) CreateUsers(users []models.User) ([]string, error) {
 	return resp, nil
 }
 
-func (u *Userservice) Login(ctx context.Context, user models.User) (string, error) {
+func (u *Userservice) Login(user models.User) (string, error) {
 	// ищем пользователя в бд
 	password := user.Password
 	err := u.repo.GetUserBy_username(&user)
@@ -88,8 +88,12 @@ func (u *Userservice) GetUser(username string) (models.User, error) {
 	return user, nil
 }
 
-func (u *Userservice) UpdateUser(user models.User, userName string) error {
-	return u.repo.UpdateUser(&user, userName)
+func (u *Userservice) UpdateUser(user models.User, userName string) (models.User, error) {
+	user, err := u.repo.UpdateUser(&user, userName)
+	if err != nil {
+		return user, err
+	}
+	return user, nil
 }
 func (u *Userservice) DeleteUser(username string) error {
 	return u.repo.DeleteUser(username)

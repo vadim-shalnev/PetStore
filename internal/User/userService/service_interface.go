@@ -6,15 +6,15 @@ import (
 )
 
 type Userservice struct {
-	Repository UserRepository
+	Repository userService.UserRepository
 }
 
-type UserRepository interface {
+type UserService interface {
 	CreateUser(user models.User) (string, error)
 	CreateUsers(users []models.User) ([]string, error)
 	Login(user models.User) (string, error)
 	Logout(ctx context.Context) (string, error)
-	GetUser(userName string) (models.User, error)
+	GetUser(username string) (models.User, error)
 	UpdateUser(user models.User, userName string) (models.User, error)
-	DeleteUser(userName string) (string, error)
+	DeleteUser(username string) error
 }

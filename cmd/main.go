@@ -5,7 +5,14 @@ import (
 	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/vadim-shalnev/PetStore/config"
+	"github.com/vadim-shalnev/PetStore/internal/Pet/petController"
+	"github.com/vadim-shalnev/PetStore/internal/Pet/petService"
+	"github.com/vadim-shalnev/PetStore/internal/Store/storeController"
+	"github.com/vadim-shalnev/PetStore/internal/Store/storeService"
+	"github.com/vadim-shalnev/PetStore/internal/User/userController"
+	"github.com/vadim-shalnev/PetStore/internal/User/userService"
 	"github.com/vadim-shalnev/PetStore/internal/handler"
+	"github.com/vadim-shalnev/PetStore/models"
 	"log"
 	"net/http"
 	"time"
@@ -41,12 +48,20 @@ func ConnectionDB(conf config.AppConf) *sql.DB {
 	return db
 }
 
-type Controllers struct {
-	User
-	Store
-	Pet
-}
-
-func ProjectInit(db *sql.DB) Controllers {
+func ProjectInit(db *sql.DB) models.Controllers {
+	userrepository := userRepository.NewUserRepository(db)
+	storerepository := storeRepository.NewStoreRepository(db)
+	petrepository := petRepository.NewPetRepository(db)
+	userservice := userService.NewUserService(userrepository)
+	storesrervice := storeService.NewStoreService(storerepository)
+	petserervice := petService.NewPetService(petrepository)
+	userrontroller := userController.NewUserController(userservice)
+	storerontroller := storeController.NewStoreController(storesrervice)
+	petrontroller := petController.NewPetController(petserervice)
+	return models.Controllers{
+		User:  userrontroller,
+		Store: storerontroller,
+		Pet:   petrontroller,
+	}
 
 }

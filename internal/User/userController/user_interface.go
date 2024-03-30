@@ -1,9 +1,12 @@
 package userController
 
-import "net/http"
+import (
+	"github.com/vadim-shalnev/PetStore/internal/User/userService"
+	"net/http"
+)
 
 type Usercontroller struct {
-	service UserService
+	service userService.UserService
 }
 
 type UserController interface {

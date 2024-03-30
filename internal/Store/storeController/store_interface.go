@@ -1,9 +1,12 @@
 package storeController
 
-import "net/http"
+import (
+	"github.com/vadim-shalnev/PetStore/internal/Store/storeService"
+	"net/http"
+)
 
 type Storecontroller struct {
-	service StoreService
+	service storeService.StoreService
 }
 
 type StoreController interface {
