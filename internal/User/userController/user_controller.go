@@ -27,12 +27,12 @@ func (c *Usercontroller) CreateUser(w http.ResponseWriter, r *http.Request) {
 		responder.HandleError(w, err)
 		return
 	}
-	resp, err := c.service.CreateUser(User)
+	err = c.service.CreateUser(User)
 	if err != nil {
 		responder.HandleError(w, err)
 		return
 	}
-	responder.HandleSuccess(w, resp)
+	responder.HandleSuccess(w, nil)
 }
 
 func (c *Usercontroller) CreateUsers(w http.ResponseWriter, r *http.Request) {
@@ -47,7 +47,7 @@ func (c *Usercontroller) CreateUsers(w http.ResponseWriter, r *http.Request) {
 		responder.HandleError(w, err)
 		return
 	}
-	resp, err := c.service.CreateUser(Users)
+	resp, err := c.service.CreateUsers(Users)
 	if err != nil {
 		responder.HandleError(w, err)
 		return
@@ -56,15 +56,19 @@ func (c *Usercontroller) CreateUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Usercontroller) Login(w http.ResponseWriter, r *http.Request) {
-	Usertoken := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-	ctx := context.WithValue(r.Context(), "jwt_token", Usertoken)
-
-	resp, err := c.service.Login(ctx)
+	// Извлекаем из запроса username и password и контекст для логина.
+	login := r.FormValue("Username")
+	Password := r.FormValue("Password")
+	var user models.User
+	user.Username = login
+	user.Password = Password
+	resp, err := c.service.Login(user)
 	if err != nil {
 		responder.HandleError(w, err)
 		return
 	}
-	responder.HandleSuccess(w, resp)
+	w.Header().Set("Authorization", "Bearer "+resp)
+	responder.HandleSuccess(w, nil)
 }
 
 func (c *Usercontroller) Logout(w http.ResponseWriter, r *http.Request) {
@@ -80,9 +84,9 @@ func (c *Usercontroller) Logout(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Usercontroller) GetUser(w http.ResponseWriter, r *http.Request) {
-	userID := chi.URLParam(r, "username")
+	userName := chi.URLParam(r, "username")
 
-	resp, err := c.service.GetUser(ctx, userID)
+	resp, err := c.service.GetUser(userName)
 	if err != nil {
 		responder.HandleError(w, err)
 		return
@@ -91,9 +95,7 @@ func (c *Usercontroller) GetUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Usercontroller) UpdateUser(w http.ResponseWriter, r *http.Request) {
-	Usertoken := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
-	ctx := context.WithValue(r.Context(), "jwt_token", Usertoken)
-	userID := chi.URLParam(r, "username")
+	userName := chi.URLParam(r, "username")
 
 	var User models.User
 	jsonBody, err := ioutil.ReadAll(r.Body)
@@ -106,7 +108,7 @@ func (c *Usercontroller) UpdateUser(w http.ResponseWriter, r *http.Request) {
 		responder.HandleError(w, err)
 		return
 	}
-	resp, err := c.service.UpdateUser(ctx, userID, User)
+	resp, err := c.service.UpdateUser(userName, User)
 	if err != nil {
 		responder.HandleError(w, err)
 		return
@@ -115,8 +117,8 @@ func (c *Usercontroller) UpdateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Usercontroller) DeleteUser(w http.ResponseWriter, r *http.Request) {
-	userID := chi.URLParam(r, "username")
-	resp, err := c.service.DeleteUser(userID)
+	userName := chi.URLParam(r, "username")
+	resp, err := c.service.DeleteUser(userName)
 	if err != nil {
 		responder.HandleError(w, err)
 		return

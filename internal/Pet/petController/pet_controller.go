@@ -54,17 +54,7 @@ func (c *Petcontroller) UpdatePet(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Petcontroller) FindByStatus(w http.ResponseWriter, r *http.Request) {
-	byteBody, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		responder.HandleError(w, err)
-		return
-	}
-	var status []string
-	err = json.Unmarshal(byteBody, &status)
-	if err != nil {
-		responder.HandleError(w, err)
-		return
-	}
+	status := r.FormValue("status")
 	pets, err := c.service.FindByStatus(status)
 	if err != nil {
 		responder.HandleError(w, err)

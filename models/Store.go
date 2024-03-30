@@ -3,6 +3,8 @@ package models
 type Order struct {
 	ID       int64  `json:"id"`
 	PetID    int64  `json:"petId"`
+	SellerID int64  `json:"sellerId"`
+	BuyerID  int64  `json:"buyerId"`
 	Quantity int64  `json:"quantity"`
 	ShipDate string `json:"shipDate"`
 	Status   string `json:"status"`

@@ -1,7 +1,5 @@
 package models
 
-type Pets []Pet
-
 type Pet struct {
 	ID       int64    `json:"id"`
 	Category Category `json:"category"`
