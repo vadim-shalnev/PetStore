@@ -1,4 +1,4 @@
-package models
+package controllers
 
 import (
 	"github.com/vadim-shalnev/PetStore/internal/Pet/petController"

@@ -15,6 +15,15 @@ func NewUserController(service userService.UserService) *Usercontroller {
 	return &Usercontroller{service: service}
 }
 
+// CreateUser @Summary CreateUser
+// @Description CreateUser
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param user body models.User true "user"
+// @Success 200 {string} string "ok"
+// @Failure 400 {string} string "bad request"
+// @Router /user [post]
 func (c *Usercontroller) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	err := json.NewDecoder(r.Body).Decode(&user)
@@ -28,9 +37,18 @@ func (c *Usercontroller) CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.Header().Set("Authorization", "Bearer "+token)
-	responder.HandleSuccess(w, nil)
+	responder.HandleSuccess(w, token)
 }
 
+// CreateUsers @Summary CreateUsers
+// @Description CreateUsers
+// @Tags Users
+// @Accept json
+// @Produce json
+// @Param users body []models.User true "users"
+// @Success 200 {string} string "ok"
+// @Failure 400 {string} string "bad request"
+// @Router /user/createWithList [post]
 func (c *Usercontroller) CreateUsers(w http.ResponseWriter, r *http.Request) {
 	var Users []models.User
 	err := json.NewDecoder(r.Body).Decode(&Users)
@@ -42,6 +60,15 @@ func (c *Usercontroller) CreateUsers(w http.ResponseWriter, r *http.Request) {
 	responder.HandleSuccess(w, resp)
 }
 
+// Login @Summary Login
+// @Description Login
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param user body models.User true "user"
+// @Success 200 {string} string "ok"
+// @Failure 400 {string} string "bad request"
+// @Router /user/login [post]
 func (c *Usercontroller) Login(w http.ResponseWriter, r *http.Request) {
 	// Извлекаем из запроса username и password и контекст для логина.
 	login := r.FormValue("Username")
@@ -58,6 +85,14 @@ func (c *Usercontroller) Login(w http.ResponseWriter, r *http.Request) {
 	responder.HandleSuccess(w, nil)
 }
 
+// Logout @Summary Logout
+// @Description Logout
+// @Tags User
+// @Accept json
+// @Produce json
+// @Success 200 {string} string "ok"
+// @Failure 400 {string} string "bad request"
+// @Router /user/logout [get]
 func (c *Usercontroller) Logout(w http.ResponseWriter, r *http.Request) {
 	Usertoken := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
 	ctx := context.WithValue(r.Context(), "jwt_token", Usertoken)
@@ -71,6 +106,15 @@ func (c *Usercontroller) Logout(w http.ResponseWriter, r *http.Request) {
 	responder.HandleSuccess(w, resp)
 }
 
+// GetUser @Summary GetUser
+// @Description GetUser
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param username path string true "username"
+// @Success 200 {object} models.User "ok"
+// @Failure 400 {string} string "bad request"
+// @Router /user/{username} [get]
 func (c *Usercontroller) GetUser(w http.ResponseWriter, r *http.Request) {
 	userName := chi.URLParam(r, "username")
 
@@ -82,6 +126,16 @@ func (c *Usercontroller) GetUser(w http.ResponseWriter, r *http.Request) {
 	responder.HandleSuccess(w, resp)
 }
 
+// UpdateUser @Summary UpdateUser
+// @Description UpdateUser
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param username path string true "username"
+// @Param user body models.User true "user"
+// @Success 200 {string} string "ok"
+// @Failure 400 {string} string "bad request"
+// @Router /user/{username} [put]
 func (c *Usercontroller) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	err := json.NewDecoder(r.Body).Decode(&user)
@@ -97,6 +151,15 @@ func (c *Usercontroller) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	responder.HandleSuccess(w, nil)
 }
 
+// DeleteUser @Summary DeleteUser
+// @Description DeleteUser
+// @Tags User
+// @Accept json
+// @Produce json
+// @Param username path string true "username"
+// @Success 200 {string} string "ok"
+// @Failure 400 {string} string "bad request"
+// @Router /user/{username} [delete]
 func (c *Usercontroller) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	userName := chi.URLParam(r, "username")
 	err := c.service.DeleteUser(userName)

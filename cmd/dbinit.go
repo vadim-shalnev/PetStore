@@ -16,7 +16,9 @@ CREATE TABLE IF NOT EXISTS categories (
 	createPetTable := `
 CREATE TABLE IF NOT EXISTS pets (
         id SERIAL PRIMARY KEY,
+        category_id INT NOT NULL,
     	FOREIGN KEY (category_id) REFERENCES categories(id),
+    	owner_id INT NOT NULL,
     	FOREIGN KEY (owner_id) REFERENCES users(id),
     	name VARCHAR(255) NOT NULL,
     	status VARCHAR(255) NOT NULL,
@@ -41,8 +43,11 @@ CREATE TABLE IF NOT EXISTS users (
 	createOrderTable := `
 CREATE TABLE IF NOT EXISTS orders (
         id SERIAL PRIMARY KEY,
+        pet_id INT NOT NULL,
     	FOREIGN KEY (pet_id) REFERENCES pets(id),
+    	seller_id INT NOT NULL,
     	FOREIGN KEY (seller_id) REFERENCES users(id),
+    	buyer_id INT NOT NULL,
     	FOREIGN KEY (buyer_id) REFERENCES users(id),
     	quantity INT NOT NULL,
     	status VARCHAR(255) NOT NULL,
@@ -62,26 +67,22 @@ CREATE TABLE IF NOT EXISTS orders (
 		log.Fatal("Failed to create category table:", err)
 	}
 
-	_, err = tx.Exec(createPetTable)
-	if err != nil {
-		tx.Rollback()
-		log.Fatal("Failed to create pet table:", err)
-	}
-
 	_, err = tx.Exec(createUserTable)
 	if err != nil {
 		tx.Rollback()
 		log.Fatal("Failed to create users table:", err)
 	}
 
+	_, err = tx.Exec(createPetTable)
+	if err != nil {
+		tx.Rollback()
+		log.Fatal("Failed to create pet table:", err)
+	}
+
 	_, err = tx.Exec(createOrderTable)
 	if err != nil {
 		tx.Rollback()
 		log.Fatal("Failed to create order table:", err)
-	}
-	err = CreateCategories(db)
-	if err != nil {
-		log.Fatal("Failed to create categories:", err)
 	}
 
 	err = tx.Commit()
@@ -93,8 +94,17 @@ CREATE TABLE IF NOT EXISTS orders (
 }
 
 // CreateCategories создаем категории питомцев
-func CreateCategories(db *sql.DB) error {
-	// ConnectionDB Подключаемся к бд
+func CreateCategories(db *sql.DB) {
+	// проверяем что таблица не пустая
+	var count int
+	err := db.QueryRow("SELECT COUNT(*) FROM categories").Scan(&count)
+	if err != nil {
+		log.Fatalf("Failed to count categories: %v", err)
+	}
+	if count > 0 {
+		return
+	}
+
 	query := `
 	INSERT INTO categories (name) VALUES
 	('Собаки'),
@@ -109,12 +119,10 @@ func CreateCategories(db *sql.DB) error {
 	('Собаки-поводыри');
 	`
 
-	_, err := db.Exec(query)
+	_, err = db.Exec(query)
 	if err != nil {
 		log.Fatalf("Failed to insert categories: %v", err)
-		return err
 	}
 	log.Println("Categories inserted successfully")
 
-	return nil
 }
