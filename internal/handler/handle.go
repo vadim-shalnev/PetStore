@@ -27,13 +27,13 @@ func InitRouters(controllers models.Controllers) http.Handler {
 		r.Post("/order", storeController.NewOrder)
 		r.Get("/order/{orderId}", storeController.GetOrder)
 		r.Delete("/order/{orderId}", storeController.DeleteOrder)
-		r.Use(middleware.RefreshToken)
+		r.Use(middleware.AuthMiddleware)
 		r.Get("/order/inventory", storeController.Getinventory)
 	})
 	// Pets
 	petsController := controllers.Pet
 	r.Route("/api/", func(r chi.Router) {
-		r.Use(middleware.RefreshToken)
+		r.Use(middleware.AuthMiddleware)
 		//r.Post("/pet/{petId}/uploadImage",userController.UpImage)
 		r.Post("/pet", petsController.AddPet)
 		r.Put("/pet", petsController.UpdatePet)
@@ -42,9 +42,12 @@ func InitRouters(controllers models.Controllers) http.Handler {
 		r.Post("/pet/{petId}", petsController.ChangePet)
 		r.Delete("/pet/{petId}", petsController.DeletePet)
 	})
-	r.Get("/swagger/*", httpSwagger.Handler(
-		httpSwagger.URL("http://localhost:8080/swagger/doc.json"),
-	))
+	/*
+		r.Get("/swagger/*", httpSwagger.Handler(
+			httpSwagger.URL("http://localhost:8080/swagger/doc.json"),
+		))
+
+	*/
 
 	return r
 }

@@ -1,6 +1,12 @@
 package petService
 
-import "github.com/vadim-shalnev/PetStore/models"
+import (
+	"context"
+	"github.com/vadim-shalnev/PetStore/internal/Pet/petRepository"
+	"github.com/vadim-shalnev/PetStore/internal/middleware"
+	"github.com/vadim-shalnev/PetStore/models"
+	"strconv"
+)
 
 func NewPetService(repo petRepository.PetRepository) *Petservice {
 	return &Petservice{
@@ -8,7 +14,11 @@ func NewPetService(repo petRepository.PetRepository) *Petservice {
 	}
 }
 
-func (p *Petservice) AddPet(pet models.Pet) error {
+func (p *Petservice) AddPet(ctx context.Context, pet models.Pet) error {
+	token := ctx.Value("jwt_token").(string)
+	id, _ := middleware.GetUserinfo(token)
+	intID, _ := strconv.Atoi(id)
+	pet.OwnerID = intID
 	return p.repo.AddPet(&pet)
 }
 
@@ -16,11 +26,11 @@ func (p *Petservice) UpdatePet(pet models.Pet) error {
 	return p.repo.UpdatePet(&pet)
 }
 
-func (p *Petservice) FindByStatus(status ...string) ([]models.Pet, error) {
+func (p *Petservice) FindByStatus(status string) ([]models.Pet, error) {
 	var pets []models.Pet
-	for _, s := range status {
-		pet := p.repo.FindByStatus(s)
-		pets = append(pets, pet)
+	err := p.repo.FindByStatus(pets, status)
+	if err != nil {
+		return nil, err
 	}
 	return pets, nil
 }
@@ -38,7 +48,7 @@ func (p *Petservice) ChangePet(id int, name, status string) error {
 	if status != "" {
 		pet.Status = status
 	}
-	return p.repo.ChangePet(pet)
+	return p.repo.ChangePet(&pet)
 }
 
 func (p *Petservice) DeletePet(id int) error {

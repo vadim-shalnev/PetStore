@@ -15,7 +15,7 @@ type Order struct {
 }
 
 type Inventory struct {
-	Sold      int64 `json:"sold"`
-	InOrder   int64 `json:"inStock"`
-	Available int64 `json:"onOrder"`
+	Sold      int `json:"sold"`
+	InOrder   int `json:"inStock"`
+	Available int `json:"onOrder"`
 }

@@ -79,6 +79,10 @@ CREATE TABLE IF NOT EXISTS orders (
 		tx.Rollback()
 		log.Fatal("Failed to create order table:", err)
 	}
+	err = CreateCategories(db)
+	if err != nil {
+		log.Fatal("Failed to create categories:", err)
+	}
 
 	err = tx.Commit()
 	if err != nil {
@@ -86,4 +90,31 @@ CREATE TABLE IF NOT EXISTS orders (
 	}
 
 	log.Println("Tables created successfully")
+}
+
+// CreateCategories создаем категории питомцев
+func CreateCategories(db *sql.DB) error {
+	// ConnectionDB Подключаемся к бд
+	query := `
+	INSERT INTO categories (name) VALUES
+	('Собаки'),
+	('Кошки'),
+	('Птицы'),
+	('Рыбки'),
+	('Хомяки'),
+	('Грызуны'),
+	('Рептилии'),
+	('Аквариумные рыбы'),
+	('Павлины'),
+	('Собаки-поводыри');
+	`
+
+	_, err := db.Exec(query)
+	if err != nil {
+		log.Fatalf("Failed to insert categories: %v", err)
+		return err
+	}
+	log.Println("Categories inserted successfully")
+
+	return nil
 }

@@ -1,6 +1,9 @@
 package storeService
 
-import "github.com/vadim-shalnev/PetStore/models"
+import (
+	"github.com/vadim-shalnev/PetStore/internal/Store/storeRepository"
+	"github.com/vadim-shalnev/PetStore/models"
+)
 
 type Storeservice struct {
 	repo storeRepository.StoreRepository

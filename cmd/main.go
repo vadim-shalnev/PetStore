@@ -6,10 +6,13 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/vadim-shalnev/PetStore/config"
 	"github.com/vadim-shalnev/PetStore/internal/Pet/petController"
+	"github.com/vadim-shalnev/PetStore/internal/Pet/petRepository"
 	"github.com/vadim-shalnev/PetStore/internal/Pet/petService"
 	"github.com/vadim-shalnev/PetStore/internal/Store/storeController"
+	"github.com/vadim-shalnev/PetStore/internal/Store/storeRepository"
 	"github.com/vadim-shalnev/PetStore/internal/Store/storeService"
 	"github.com/vadim-shalnev/PetStore/internal/User/userController"
+	"github.com/vadim-shalnev/PetStore/internal/User/userRepository"
 	"github.com/vadim-shalnev/PetStore/internal/User/userService"
 	"github.com/vadim-shalnev/PetStore/internal/handler"
 	"github.com/vadim-shalnev/PetStore/models"
@@ -44,6 +47,7 @@ func ConnectionDB(conf config.AppConf) *sql.DB {
 	if err != nil {
 		log.Fatal("Failed to connect to database:", err)
 	}
+
 	defer db.Close()
 	return db
 }
