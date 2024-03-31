@@ -23,7 +23,7 @@ func NewUserController(service userService.UserService) *Usercontroller {
 // @Param user body models.User true "user"
 // @Success 200 {string} string "ok"
 // @Failure 400 {string} string "bad request"
-// @Router /user [post]
+// @Router /user/user [post]
 func (c *Usercontroller) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	err := json.NewDecoder(r.Body).Decode(&user)
@@ -42,13 +42,13 @@ func (c *Usercontroller) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 // CreateUsers @Summary CreateUsers
 // @Description CreateUsers
-// @Tags Users
+// @Tags User
 // @Accept json
 // @Produce json
 // @Param users body []models.User true "users"
 // @Success 200 {string} string "ok"
 // @Failure 400 {string} string "bad request"
-// @Router /user/createWithList [post]
+// @Router /user/user/createWithList [post]
 func (c *Usercontroller) CreateUsers(w http.ResponseWriter, r *http.Request) {
 	var Users []models.User
 	err := json.NewDecoder(r.Body).Decode(&Users)
@@ -65,10 +65,11 @@ func (c *Usercontroller) CreateUsers(w http.ResponseWriter, r *http.Request) {
 // @Tags User
 // @Accept json
 // @Produce json
-// @Param user body models.User true "user"
+// @Param username formData string true "Username"
+// @Param password formData string true "Password"
 // @Success 200 {string} string "ok"
 // @Failure 400 {string} string "bad request"
-// @Router /user/login [post]
+// @Router /user/user/login [post]
 func (c *Usercontroller) Login(w http.ResponseWriter, r *http.Request) {
 	// Извлекаем из запроса username и password и контекст для логина.
 	login := r.FormValue("Username")
@@ -92,7 +93,7 @@ func (c *Usercontroller) Login(w http.ResponseWriter, r *http.Request) {
 // @Produce json
 // @Success 200 {string} string "ok"
 // @Failure 400 {string} string "bad request"
-// @Router /user/logout [get]
+// @Router /user/user/logout [get]
 func (c *Usercontroller) Logout(w http.ResponseWriter, r *http.Request) {
 	Usertoken := strings.TrimPrefix(r.Header.Get("Authorization"), "Bearer ")
 	ctx := context.WithValue(r.Context(), "jwt_token", Usertoken)
@@ -114,7 +115,7 @@ func (c *Usercontroller) Logout(w http.ResponseWriter, r *http.Request) {
 // @Param username path string true "username"
 // @Success 200 {object} models.User "ok"
 // @Failure 400 {string} string "bad request"
-// @Router /user/{username} [get]
+// @Router /user/user [get]
 func (c *Usercontroller) GetUser(w http.ResponseWriter, r *http.Request) {
 	userName := chi.URLParam(r, "username")
 
@@ -135,7 +136,7 @@ func (c *Usercontroller) GetUser(w http.ResponseWriter, r *http.Request) {
 // @Param user body models.User true "user"
 // @Success 200 {string} string "ok"
 // @Failure 400 {string} string "bad request"
-// @Router /user/{username} [put]
+// @Router /user/user/{username} [put]
 func (c *Usercontroller) UpdateUser(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	err := json.NewDecoder(r.Body).Decode(&user)
@@ -159,7 +160,7 @@ func (c *Usercontroller) UpdateUser(w http.ResponseWriter, r *http.Request) {
 // @Param username path string true "username"
 // @Success 200 {string} string "ok"
 // @Failure 400 {string} string "bad request"
-// @Router /user/{username} [delete]
+// @Router /user/user/{username} [delete]
 func (c *Usercontroller) DeleteUser(w http.ResponseWriter, r *http.Request) {
 	userName := chi.URLParam(r, "username")
 	err := c.service.DeleteUser(userName)

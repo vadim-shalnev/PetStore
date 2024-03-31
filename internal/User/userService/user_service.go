@@ -50,7 +50,7 @@ func (u *Userservice) CreateUsers(users []models.User) ([]string, error) {
 		if err != nil {
 			resp = append(resp, fmt.Sprintf("internalError with user %s: %s", user.Username, err))
 		}
-		resp = append(resp, fmt.Sprintf("User username %s create with ID: %v token is %s", user.Username, user.ID, token))
+		resp = append(resp, fmt.Sprintf("User username %s create with token %s", user.Username, user.ID, token))
 	}
 	return resp, nil
 }

@@ -3,6 +3,7 @@ package handler
 import (
 	"github.com/go-chi/chi/v5"
 	httpSwagger "github.com/swaggo/http-swagger"
+	_ "github.com/vadim-shalnev/PetStore/docs"
 	"github.com/vadim-shalnev/PetStore/internal/middleware"
 	"github.com/vadim-shalnev/PetStore/models/controllers"
 	"net/http"
@@ -17,7 +18,7 @@ func InitRouters(controllers controllers.Controllers) http.Handler {
 		r.Route("/user/", func(r chi.Router) {
 			r.Post("/user", userController.CreateUser)
 			r.Post("/user/createWithList", userController.CreateUsers)
-			r.Get("/user/login", userController.Login)
+			r.Post("/user/login", userController.Login)
 			r.Get("/user/logout", userController.Logout)
 			r.Get("/user/{username}", userController.GetUser)
 			r.Put("/user/{username}", userController.UpdateUser)
@@ -46,11 +47,11 @@ func InitRouters(controllers controllers.Controllers) http.Handler {
 			r.Post("/pet/{petId}", petsController.ChangePet)
 			r.Delete("/pet/{petId}", petsController.DeletePet)
 		})
-		r.Get("/swagger/*", httpSwagger.Handler(
-			httpSwagger.URL("http://localhost:8080/swagger/doc.json"),
-		))
 
 	})
+	r.Get("/swagger/*", httpSwagger.Handler(
+		httpSwagger.URL("http://localhost:8080/swagger/doc.json"),
+	))
 
 	return r
 }

@@ -16,6 +16,15 @@ func NewStoreController(service storeService.StoreService) *Storecontroller {
 	}
 }
 
+// NewOrder @Summary Create new order
+// @Description Create new order
+// @Tags Store
+// @Accept json
+// @Produce json
+// @Param order body models.Order true "Order"
+// @Success 200 {object} models.Order
+// @Failure 400 {object} string "bad request"
+// @Router /store/order [post]
 func (c *Storecontroller) NewOrder(w http.ResponseWriter, r *http.Request) {
 	var order models.Order
 	err := json.NewDecoder(r.Body).Decode(&order)
@@ -32,6 +41,15 @@ func (c *Storecontroller) NewOrder(w http.ResponseWriter, r *http.Request) {
 	responder.HandleSuccess(w, resp)
 }
 
+// GetOrder @Summary Get order by ID
+// @Description Get order by ID
+// @Tags Store
+// @Accept json
+// @Produce json
+// @Param orderID path int true "Order ID"
+// @Success 200 {object} models.Order
+// @Failure 400 {object} string "bad request"
+// @Router /store/order/{orderID} [get]
 func (c *Storecontroller) GetOrder(w http.ResponseWriter, r *http.Request) {
 	orderID := chi.URLParam(r, "orderID")
 	ID, err := strconv.Atoi(orderID)
@@ -47,6 +65,15 @@ func (c *Storecontroller) GetOrder(w http.ResponseWriter, r *http.Request) {
 	responder.HandleSuccess(w, resp)
 }
 
+// DeleteOrder @Summary Delete order by ID
+// @Description Delete order by ID
+// @Tags Store
+// @Accept json
+// @Produce json
+// @Param orderID path int true "Order ID"
+// @Success 200 {object} string
+// @Failure 400 {object} string "bad request"
+// @Router /store/order/{orderID} [delete]
 func (c *Storecontroller) DeleteOrder(w http.ResponseWriter, r *http.Request) {
 	orderID := chi.URLParam(r, "orderID")
 	ID, err := strconv.Atoi(orderID)
@@ -62,6 +89,14 @@ func (c *Storecontroller) DeleteOrder(w http.ResponseWriter, r *http.Request) {
 	responder.HandleSuccess(w, nil)
 }
 
+// Getinventory @Summary Get inventory
+// @Description Get inventory
+// @Tags Store
+// @Accept json
+// @Produce json
+// @Success 200 {object} models.Inventory
+// @Failure 400 {object} string "bad request"
+// @Router /api/store/inventory [get]
 func (c *Storecontroller) Getinventory(w http.ResponseWriter, r *http.Request) {
 	var inventory models.Inventory
 	resp, err := c.service.Getinventory(inventory)

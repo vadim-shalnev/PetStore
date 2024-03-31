@@ -1,5 +1,63 @@
 basePath: /api/
 definitions:
+  models.Category:
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+    type: object
+  models.Inventory:
+    properties:
+      inStock:
+        type: integer
+      onOrder:
+        type: integer
+      sold:
+        type: integer
+    type: object
+  models.Order:
+    properties:
+      buyerId:
+        type: integer
+      complete:
+        type: boolean
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      petId:
+        type: integer
+      quantity:
+        type: integer
+      sellerId:
+        type: integer
+      status:
+        type: string
+    type: object
+  models.Pet:
+    properties:
+      category:
+        $ref: '#/definitions/models.Category'
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
+      owner_id:
+        type: integer
+      status:
+        type: string
+      tags:
+        items:
+          $ref: '#/definitions/models.Category'
+        type: array
+    type: object
   models.User:
     properties:
       created_at:
@@ -30,7 +88,273 @@ info:
   title: PetStore API
   version: "1.0"
 paths:
-  /user:
+  /api/store/inventory:
+    get:
+      consumes:
+      - application/json
+      description: Get inventory
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Inventory'
+        "400":
+          description: bad request
+          schema:
+            type: string
+      tags:
+      - Store
+  /pet/pet:
+    post:
+      consumes:
+      - application/json
+      description: get string by ID
+      parameters:
+      - description: Pet object
+        in: body
+        name: pet
+        required: true
+        schema:
+          $ref: '#/definitions/models.Pet'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: bad request
+          schema:
+            type: string
+      tags:
+      - Pet
+    put:
+      consumes:
+      - application/json
+      description: get string by ID
+      parameters:
+      - description: Pet object
+        in: body
+        name: pet
+        required: true
+        schema:
+          $ref: '#/definitions/models.Pet'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: bad request
+          schema:
+            type: string
+      tags:
+      - Pet
+  /pet/pet/{petId}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete pet
+      parameters:
+      - description: ID of pet
+        in: path
+        name: petId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: bad request
+          schema:
+            type: string
+      tags:
+      - Pet
+    get:
+      consumes:
+      - application/json
+      description: Returns a single pet
+      parameters:
+      - description: ID of pet
+        in: path
+        name: petId
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/models.Pet'
+        "400":
+          description: bad request
+          schema:
+            type: string
+      tags:
+      - Pet
+    post:
+      consumes:
+      - application/json
+      description: Change pet
+      parameters:
+      - description: ID of pet
+        in: path
+        name: petId
+        required: true
+        type: integer
+      - description: Name of pet
+        in: query
+        name: name
+        type: string
+      - description: Status of pet
+        in: query
+        name: status
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            type: string
+        "400":
+          description: bad request
+          schema:
+            type: string
+      tags:
+      - Pet
+  /pet/pet/findByStatus:
+    get:
+      consumes:
+      - application/json
+      description: Only one status for request
+      parameters:
+      - description: Status values that need to be considered for filter
+        in: query
+        name: status
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            items:
+              $ref: '#/definitions/models.Pet'
+            type: array
+        "400":
+          description: bad request
+          schema:
+            type: string
+      tags:
+      - Pet
+  /store/order:
+    post:
+      consumes:
+      - application/json
+      description: Create new order
+      parameters:
+      - description: Order
+        in: body
+        name: order
+        required: true
+        schema:
+          $ref: '#/definitions/models.Order'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Order'
+        "400":
+          description: bad request
+          schema:
+            type: string
+      tags:
+      - Store
+  /store/order/{orderID}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete order by ID
+      parameters:
+      - description: Order ID
+        in: path
+        name: orderID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+        "400":
+          description: bad request
+          schema:
+            type: string
+      tags:
+      - Store
+    get:
+      consumes:
+      - application/json
+      description: Get order by ID
+      parameters:
+      - description: Order ID
+        in: path
+        name: orderID
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Order'
+        "400":
+          description: bad request
+          schema:
+            type: string
+      tags:
+      - Store
+  /user/user:
+    get:
+      consumes:
+      - application/json
+      description: GetUser
+      parameters:
+      - description: username
+        in: path
+        name: username
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            $ref: '#/definitions/models.User'
+        "400":
+          description: bad request
+          schema:
+            type: string
+      tags:
+      - User
     post:
       consumes:
       - application/json
@@ -55,7 +379,7 @@ paths:
             type: string
       tags:
       - User
-  /user/{username}:
+  /user/user/{username}:
     delete:
       consumes:
       - application/json
@@ -73,29 +397,6 @@ paths:
           description: ok
           schema:
             type: string
-        "400":
-          description: bad request
-          schema:
-            type: string
-      tags:
-      - User
-    get:
-      consumes:
-      - application/json
-      description: GetUser
-      parameters:
-      - description: username
-        in: path
-        name: username
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: ok
-          schema:
-            $ref: '#/definitions/models.User'
         "400":
           description: bad request
           schema:
@@ -131,7 +432,7 @@ paths:
             type: string
       tags:
       - User
-  /user/createWithList:
+  /user/user/createWithList:
     post:
       consumes:
       - application/json
@@ -157,19 +458,23 @@ paths:
           schema:
             type: string
       tags:
-      - Users
-  /user/login:
+      - User
+  /user/user/login:
     post:
       consumes:
       - application/json
       description: Login
       parameters:
-      - description: user
-        in: body
-        name: user
+      - description: Username
+        in: formData
+        name: username
         required: true
-        schema:
-          $ref: '#/definitions/models.User'
+        type: string
+      - description: Password
+        in: formData
+        name: password
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -183,7 +488,7 @@ paths:
             type: string
       tags:
       - User
-  /user/logout:
+  /user/user/logout:
     get:
       consumes:
       - application/json

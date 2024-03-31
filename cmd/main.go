@@ -33,7 +33,7 @@ import (
 // @name Authorization
 func main() {
 	// Загружаем переменные окружения из файла .env
-	err := godotenv.Load()
+	err := godotenv.Load("/app/.env")
 	if err != nil {
 		log.Fatal("Error loading .env file")
 		return
