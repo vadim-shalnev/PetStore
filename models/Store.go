@@ -1,14 +1,17 @@
 package models
 
+import "time"
+
 type Order struct {
-	ID       int64  `json:"id"`
-	PetID    int64  `json:"petId"`
-	SellerID int64  `json:"sellerId"`
-	BuyerID  int64  `json:"buyerId"`
-	Quantity int64  `json:"quantity"`
-	ShipDate string `json:"shipDate"`
-	Status   string `json:"status"`
-	Complete bool   `json:"complete"`
+	ID        int        `json:"id"`
+	PetID     int        `json:"petId"`
+	SellerID  int        `json:"sellerId"`
+	BuyerID   int        `json:"buyerId"`
+	Quantity  int        `json:"quantity"`
+	Status    string     `json:"status"`
+	Complete  bool       `json:"complete"`
+	CreatedAt time.Time  `json:"created_at"`
+	DeletedAt *time.Time `json:"deleted_at"`
 }
 
 type Inventory struct {

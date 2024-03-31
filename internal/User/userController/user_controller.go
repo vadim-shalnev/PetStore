@@ -83,16 +83,18 @@ func (c *Usercontroller) GetUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *Usercontroller) UpdateUser(w http.ResponseWriter, r *http.Request) {
-	userName := chi.URLParam(r, "username")
-
-	var User models.User
-	User.Username = userName
-	resp, err := c.service.UpdateUser(User, User.Username)
+	var user models.User
+	err := json.NewDecoder(r.Body).Decode(&user)
 	if err != nil {
 		responder.HandleError(w, err)
 		return
 	}
-	responder.HandleSuccess(w, resp)
+	err = c.service.UpdateUser(user)
+	if err != nil {
+		responder.HandleError(w, err)
+		return
+	}
+	responder.HandleSuccess(w, nil)
 }
 
 func (c *Usercontroller) DeleteUser(w http.ResponseWriter, r *http.Request) {
